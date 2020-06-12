@@ -32,5 +32,20 @@ soup = BeautifulSoup(data, 'html.parser')
 
 tags = soup.select('.card-post__inner > a')
 
+customer_links = []
+
 for tag in tags:
-    print(tag.get('href'))
+    # customer_links.append(tag.get('href'))
+    customer_response = requests.get(tag.get('href'))
+    customer_data = customer_response.content
+    soup = BeautifulSoup(customer_data, 'html.parser')
+    customer_domain = soup.select('.alt-btn__text')[0].text
+    print(customer_domain)
+
+
+
+
+
+
+
+# print(customer_links)
