@@ -1,13 +1,12 @@
 from bs4 import BeautifulSoup
 import requests
+import csv
 
 url = "http://192.168.88.188:8050/run" # local Splash instance
 
 headers = {
     'Content-Type': 'application/json'
 }
-
-# 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0'
 
 lua_script = """
 splash:go(args.url)
@@ -24,14 +23,11 @@ response = requests.post(url, json={
     'url': 'https://www.chorus.ai/customers'
 })
 
-# print(response.content)
-
 data = response.content
-# print(data)
-
 soup = BeautifulSoup(data, 'html.parser')
-
 tags = soup.select('.card-post__inner > a')
+
+all_customers = []
 
 # getting links of ALL listed customers - after expaning the list with "click from Splash"
 for tag in tags:
@@ -42,21 +38,18 @@ for tag in tags:
 
     # Customer NAME
     customer_name = soup.select('.breadcrumb__link')[1].text
-    print(customer_name)
 
     # Customer DOMAIN
     customer_domain = soup.select('.alt-btn__text')[0].text
-    print(customer_domain)
 
     # Customer LOGO
     customer_logo = soup.select('.about-company__logo > img')[0].get('src')
-    print(customer_logo)
 
-    
+    c = (customer_name, customer_domain, customer_logo)
+    all_customers.append(c)
 
-
-
-
-
-
-# print(customer_links)
+with open('customers.csv','w') as out:
+    csv_out=csv.writer(out, delimiter=';')
+    csv_out.writerow(['Customer_Name','Customer_Domain','Customer_Logo'])
+    for row in all_customers:
+        csv_out.writerow(row)
