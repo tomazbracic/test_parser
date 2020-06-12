@@ -18,6 +18,7 @@ splash:wait(3)
 return splash:html()
 """
 
+# calling main page and clicking on "more customer link"
 response = requests.post(url, json={
     'lua_source': lua_script,
     'url': 'https://www.chorus.ai/customers'
@@ -32,16 +33,26 @@ soup = BeautifulSoup(data, 'html.parser')
 
 tags = soup.select('.card-post__inner > a')
 
-customer_links = []
-
+# getting links of ALL listed customers - after expaning the list with "click from Splash"
 for tag in tags:
-    # customer_links.append(tag.get('href'))
+    # opening PER CUSTOMER web page
     customer_response = requests.get(tag.get('href'))
     customer_data = customer_response.content
     soup = BeautifulSoup(customer_data, 'html.parser')
+
+    # Customer NAME
+    customer_name = soup.select('.breadcrumb__link')[1].text
+    print(customer_name)
+
+    # Customer DOMAIN
     customer_domain = soup.select('.alt-btn__text')[0].text
     print(customer_domain)
 
+    # Customer LOGO
+    customer_logo = soup.select('.about-company__logo > img')[0].get('src')
+    print(customer_logo)
+
+    
 
 
 
